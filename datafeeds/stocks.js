@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const getAllSymbols = async (symbol, exchange) => {
   try {
-    let url = `http://localhost:8000/virtual-trading`;
+    let url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/virtual-trading`;
     if (symbol) {
       url += `?symbol=${encodeURIComponent(symbol)}`;
     }

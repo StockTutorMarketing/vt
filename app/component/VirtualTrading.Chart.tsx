@@ -4,7 +4,7 @@ import TradingViewDataFeed from '../../datafeeds/datafeed';
 import { MyContext } from '@/context/symbolecontext';
 
 const TradingViewChart = () => {
-  const { value: symbol } = useContext(MyContext);
+  const { value: symbol } = useContext<any>(MyContext);
 
   const chartContainerRef = useRef(null);
   const tvWidgetRef = useRef(null);

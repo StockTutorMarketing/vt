@@ -2,7 +2,7 @@ import { makeApiRequest } from './helper.js';
 import { getAllSymbols } from './stocks.js';
 
 // WebSocket connection
-const ws = new WebSocket('ws://localhost:8000/virtual');
+const ws = new WebSocket(process.env.NEXT_PUBLIC_WEBSOCKET);
 let subscribers = {};
 let liveData = {};
 

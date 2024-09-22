@@ -12,7 +12,7 @@ export const MyProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const newSocket = new WebSocket("ws://localhost:8000/virtual");
+    const newSocket = new WebSocket(process.env.NEXT_PUBLIC_WEBSOCKET);
     setSocket(newSocket);
 
     newSocket.onopen = () => {

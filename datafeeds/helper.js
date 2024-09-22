@@ -23,7 +23,7 @@ export async function makeApiRequest(from, to, instrumentKey, resolution, countB
         const toFormatted = convertUnixTimestampToZerodhaFormat(to);
 
         // Send countBack to ensure we get enough bars
-        const url = `http://localhost:8005/api/v1/historical-data`;
+        const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/historical-data`;
 
         // Make the API request
         const response = await axios.post(url, {
