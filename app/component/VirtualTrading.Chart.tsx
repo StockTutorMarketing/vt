@@ -13,7 +13,7 @@ const TradingViewChart = () => {
     if (!chartContainerRef.current) return;
     const widgetOptions = {
       symbol: symbol || 'ZOMATO',
-      interval: "2",
+      interval: "15",
       container: chartContainerRef.current,
       datafeed: TradingViewDataFeed,
       library_path: "/static/charting_library/",

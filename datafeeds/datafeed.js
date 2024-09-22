@@ -8,7 +8,7 @@ let liveData = {};
 
 // Configuration for the datafeed
 const configurationData = {
-    supported_resolutions: ['2', '3', '5', '10', '15', '30', '60', '120', '1D', '1W', '1M'],
+    supported_resolutions: ['1', '3', '5', '10', '15', '30', '60', '120', '1D', '1W', '1M'],
     exchanges: [
         { value: 'NSE', name: 'NSE', desc: 'National Stock Exchange of India' },
         { value: 'BSE', name: 'BSE', desc: 'Bombay Stock Exchange' }
@@ -174,8 +174,6 @@ export default {
 
     getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
         const { from, to, countBack } = periodParams;
-
-
         try {
             const instrumentKey = symbolInfo.instrumentKey;
             const data = await makeApiRequest( from, to, instrumentKey, resolution ,countBack);
