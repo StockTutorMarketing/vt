@@ -11,9 +11,7 @@ import Position from "@/app/component/Position";
 import Image from "next/image";
 import { StockSkeleton } from "../Skeleton";
 import StockSearchBox from "./StockSearchBox";
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { MyContext } from "@/context/symbolecontext";
 
@@ -88,9 +86,9 @@ const StockList = () => {
    const price = selectedStockData.last_price || "N/A";
    
   return (
-    <div className="flex flex-col h-screen overflow-hidden" >
-      <div className="flex flex-grow" >
-        <div className="w-full md:w-1/4 border-r-2 bg-gray-50 shadow-lg px-1 sm:px-1 md:px-1 lg:px-4 py-1 sm:py-1 md:py-1 lg:py-4">
+    <div className="flex flex-col h-screen overflow-hidden">
+      <div className="flex flex-grow">
+        <div className="w-full md:w-1/4 border-r-2 bg-gray-50 shadow-lg p-4">
           <div className="flex items-center justify-between mb-4">
             <div className="text-xl font-bold">Watchlist</div>
           </div>
@@ -121,7 +119,7 @@ const StockList = () => {
                 return (
                   <div
                     key={symbol}
-                    className={`stockcard px-0 md:px-1 lg:px-2 py-2 flex justify-between items-center border-b hover:bg-gray-100 cursor-pointer ${symbol === selectedStock ? "bg-gray-200" : ""
+                    className={`stockcard p-2 py-2 flex justify-between items-center border-b hover:bg-gray-100 cursor-pointer ${symbol === selectedStock ? "bg-gray-200" : ""
                       }`}
                     onMouseEnter={() => setHoveredStock(symbol)}
                     onMouseLeave={() => setHoveredStock(null)}
@@ -141,15 +139,15 @@ const StockList = () => {
                       </div>
                     </div>
                     {hoveredStock === symbol && (
-                      <div className="mt-1 sm:mt-1 md:mt-1 lg:mt-2 flex sm:flex md:flex-wrap lg:flex gap-0 sm:gap-0 md:gap-1 lg:gap-2 md:justify-end w-[20%] md:w-[25%] lg:w-[30%]">
+                      <div className="mt-2 flex gap-2">
                         <button
-                          className="bg-green-500 text-white px-2 py-1 md:py-0.5 lg:py-1 rounded-full text-xs"
+                          className="bg-green-500 text-white px-2 py-1 rounded-full text-xs"
                           onClick={handleBuyStock}
                         >
                           Buy
                         </button>
                         <button
-                          className="bg-red-500 text-white px-2 py-1 md:py-0.5 lg:py-1 rounded-full text-xs"
+                          className="bg-red-500 text-white px-2 py-1 rounded-full text-xs"
                           onClick={handleSellStock}
                         >
                           Sell

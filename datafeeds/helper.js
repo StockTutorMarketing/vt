@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 function convertUnixTimestampToZerodhaFormat(unixTimestamp) {
     const date = new Date(unixTimestamp * 1000);
     const year = date.getUTCFullYear();

@@ -52,8 +52,8 @@ export default function StockSearchBox() {
         <div className="relative mb-4">
             <input
                 type="text"
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none placeholder:text-sm sm:placeholder:text-sm md:placeholder:text-sm lg:placeholder:text-lg"
-                placeholder="Search Stocks"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none"
+                placeholder="Stocks, Futures & Options"
                 value={searchQuery}
                 onChange={handleInputChange}
             />

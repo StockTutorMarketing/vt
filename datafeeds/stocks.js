@@ -22,6 +22,11 @@ export const getAllSymbols = async (symbol, exchange) => {
     throw error;
   }
 };
+
+
+
+
+//now this will for Drawer stock data
 export const GetSymbolForDrawer = async () => {
   return [
     {
@@ -65,14 +70,7 @@ export const GetSymbolForDrawer = async () => {
       "type": "stock",
       "instrumentKey": "1756929"
     },
-    {
-      "symbol": "TATAMTRDVR",
-      "ticker": "TATAMTRDVR",
-      "description": "TATA MOTORS DVR  A  ORD",
-      "exchange": "NSE",
-      "type": "stock",
-      "instrumentKey": "4343041"
-    },
+  
     {
       "symbol": "BRITANNIA",
       "ticker": "BRITANNIA",
