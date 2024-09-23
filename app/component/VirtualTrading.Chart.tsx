@@ -51,7 +51,7 @@ const TradingViewChart = () => {
   return (
     <div
       ref={chartContainerRef}
-      style={{display:"fixed",bottom:"40px", width: "100%", height: "80%" }}
+      style={{display:"fixed",bottom:"40px", width: "100%", height: "100%" }}
     />
   );
 };

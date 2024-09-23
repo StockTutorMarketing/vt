@@ -1,12 +1,11 @@
 import { makeApiRequest } from './helper.js';
 import { getAllSymbols } from './stocks.js';
 
-// WebSocket connection
-const ws = new WebSocket(process.env.NEXT_PUBLIC_WEBSOCKET);
+const ws = new WebSocket('ws://localhost:8000/virtual');
 let subscribers = {};
 let liveData = {};
+const pingIntervalDuration = 3000;
 
-// Configuration for the datafeed
 const configurationData = {
     supported_resolutions: ['1', '3', '5', '10', '15', '30', '60', '1D'],
     exchanges: [
@@ -18,21 +17,24 @@ const configurationData = {
     ]
 };
 
-ws.onopen = () => {
-    console.log('Connected to the WebSocket server');
-};
-
-// Handle WebSocket messages
 ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    console.log('Received WebSocket message:', data);
-
-    if (data.type === 'live_feed') {
+    try {
+        const data = JSON.parse(event.data);
+        console.log('Received WebSocket message:', data);
         processLiveFeed(data);
+    } catch (error) {
+        console.error('Error parsing message:', event.data, error);
+        if (event.data === "pong") {
+            console.log("Received pong response from server");
+        }
     }
 };
 
-// Process and store live data
+ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    processLiveFeed(data);
+};
+
 function processLiveFeed(feeds) {
     Object.keys(subscribers).forEach(subscriberUID => {
         const { onRealtimeCallback, symbolInfo } = subscribers[subscriberUID];
@@ -141,7 +143,6 @@ export default {
     },
 
     resolveSymbol: async (symbolName, onSymbolResolvedCallback, onResolveErrorCallback) => {
-        console.log(symbolName, "this is my symbol name")
         const symbols = await getAllSymbols(symbolName);
         const symbolItem = symbols.find(({ ticker }) => ticker === symbolName);
         if (!symbolItem) {
@@ -176,35 +177,30 @@ export default {
 
         try {
             const instrumentKey = symbolInfo.instrumentKey;
-            const data = await makeApiRequest( from, to, instrumentKey, resolution ,countBack);
+            const data = await makeApiRequest(from, to, instrumentKey, resolution, countBack);
 
             const candles = data;
             let bars = [];
 
-            console.log(data ,"this is my data")
 
-            const startTime = from*1000;
-            const endTime = to*1000;
-
-            console.log(startTime ,"this is start time")
+            const startTime = from * 1000;
+            const endTime = to * 1000;
 
             candles.forEach(candle => {
                 const candleTime = new Date(candle[0]).getTime();
-                console.log(candle ,"this data rohit")
 
 
-                    const barTime = convertToGMTMidnight(candle[0], resolution);
-                    bars.push({
-                        time: barTime,
-                        low: candle[3],
-                        high: candle[2],
-                        open: candle[1],
-                        close: candle[4],
-                        volume: candle[5],
-                    });
-                
+                const barTime = convertToGMTMidnight(candle[0], resolution);
+                bars.push({
+                    time: barTime,
+                    low: candle[3],
+                    high: candle[2],
+                    open: candle[1],
+                    close: candle[4],
+                    volume: candle[5],
+                });
+
             });
-            console.log(bars ,"this is my bars")
             onHistoryCallback(bars, { noData: bars.length === 0 });
         } catch (error) {
             console.error('[getBars]: Error occurred', error);
@@ -214,9 +210,13 @@ export default {
 
     subscribeBars: (symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback) => {
         subscribers[subscriberUID] = { onRealtimeCallback, symbolInfo };
-
+        const tokens = symbolInfo.instrumentKey
         if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'subscribe', symbol: symbolInfo.ticker }));
+            ws.send(`{   "type": "subscribe", "tokens": [${tokens}]}`);
+        } else {
+            ws.onopen = () => {
+                ws.send(JSON.stringify({ type: 'subscribe', tokens: [tokens] }));
+            };
         }
     },
 
@@ -229,3 +229,4 @@ export default {
         }
     }
 };
+
