@@ -18,7 +18,7 @@ export const MyProvider = ({ children }) => {
     newSocket.onopen = () => {
       console.log("WebSocket connection established");
       newSocket.send(
-        '{   "type": "subscribe", "tokens": [128083204,128108804,139321604,82945,1756929,4343041,128211204,139109380,1304833,5215745]}'
+        '{   "type": "subscribe", "tokens": [128083204,128108804,139321604,82945,1756929,4343041,128211204,139109380,1304833,5215745,128046084]}'
       );
     };
 
