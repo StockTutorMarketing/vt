@@ -78,7 +78,7 @@ const StockList = () => {
    };
  
    const selectedStockData = stockData[selectedStock] || {};
-   const price = selectedStockData.last_price || "N/A";
+   const price = selectedStockData.last_price || "0.0";
    
   return (
     <div className="flex flex-col h-screen overflow-hidden">
@@ -96,9 +96,9 @@ const StockList = () => {
             {stocks.length > 0 ? (
               stocks.map(({ symbol, instrumentKey, exchange }, index) => {
                 const stockInfo = stockData[instrumentKey] || {};
-                const price = stockInfo.last_price || "N/A";
+                const price = stockInfo.last_price || "0.0";
                 const openPrice = stockInfo.ohlc?.close || 0;
-                const change = price !== "N/A" ? (price - openPrice).toFixed(2) : "0";
+                const change = price !== "0.0" ? (price - openPrice).toFixed(2) : "0";
                 const percentage =
                   openPrice !== 0
                     ? ((Number(change) / openPrice) * 100).toFixed(2)
