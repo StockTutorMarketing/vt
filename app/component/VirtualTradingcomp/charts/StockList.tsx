@@ -32,12 +32,7 @@ const StockList = () => {
    const fetchMoreStocks = async () => {
      try {
        const stockData = await GetSymbolForDrawer();
-       setStocks((prevStocks) => [...prevStocks, ...stockData]);
-       if (stockData.length === 0) {
-         setHasMore(false);
-       } else {
-         setPage(page + 1);
-       }
+       setStocks(stockData)
      } catch (error) {
        console.error("Failed to fetch stock data:", error);
      }
@@ -97,14 +92,7 @@ const StockList = () => {
 
           <StockSearchBox />
 
-          <InfiniteScroll
-            dataLength={stocks.length}
-            next={fetchMoreStocks}
-            hasMore={hasMore}
-            loader={<StockSkeleton />} 
-            height={900}
-            endMessage={<p className="text-center py-4">No more stocks to load</p>}
-          >
+         
             {stocks.length > 0 ? (
               stocks.map(({ symbol, instrumentKey, exchange }, index) => {
                 const stockInfo = stockData[instrumentKey] || {};
@@ -118,7 +106,7 @@ const StockList = () => {
 
                 return (
                   <div
-                    key={symbol}
+                    key={instrumentKey}
                     className={`stockcard p-2 py-2 flex justify-between items-center border-b hover:bg-gray-100 cursor-pointer ${symbol === selectedStock ? "bg-gray-200" : ""
                       }`}
                     onMouseEnter={() => setHoveredStock(symbol)}
@@ -163,7 +151,6 @@ const StockList = () => {
                 <StockSkeleton />
               </div>
             )}
-          </InfiniteScroll>
         </div>
 
         <div className="w-full md:w-3/4 h-full flex flex-col">

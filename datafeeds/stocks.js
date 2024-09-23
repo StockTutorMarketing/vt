@@ -70,7 +70,14 @@ export const GetSymbolForDrawer = async () => {
       "type": "stock",
       "instrumentKey": "1756929"
     },
-  
+    {
+      "symbol": "HDFCBANK",
+      "ticker": "HDFCBANK",
+      "description": "HDFC BANK",
+      "exchange": "BSE",
+      "type": "stock",
+      "instrumentKey": "128046084"
+  },
     {
       "symbol": "BRITANNIA",
       "ticker": "BRITANNIA",

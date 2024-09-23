@@ -8,7 +8,7 @@ let liveData = {};
 
 // Configuration for the datafeed
 const configurationData = {
-    supported_resolutions: ['1', '3', '5', '10', '15', '30', '60', '120', '1D', '1W', '1M'],
+    supported_resolutions: ['1', '3', '5', '10', '15', '30', '60', '1D'],
     exchanges: [
         { value: 'NSE', name: 'NSE', desc: 'National Stock Exchange of India' },
         { value: 'BSE', name: 'BSE', desc: 'Bombay Stock Exchange' }
@@ -117,7 +117,6 @@ function validateTimestamp(timestamp) {
     return isNaN(timestamp) ? null : timestamp;
 }
 
-// Convert to GMT midnight
 function convertToGMTMidnight(candleTime, resolution) {
     const date = new Date(candleTime);
     if (resolution.endsWith('D') || resolution.endsWith('W') || resolution.endsWith('M')) {
@@ -174,18 +173,26 @@ export default {
 
     getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
         const { from, to, countBack } = periodParams;
+
         try {
             const instrumentKey = symbolInfo.instrumentKey;
             const data = await makeApiRequest( from, to, instrumentKey, resolution ,countBack);
 
             const candles = data;
             let bars = [];
-            const startTime = from * 1000;
-            const endTime = to * 1000;
+
+            console.log(data ,"this is my data")
+
+            const startTime = from*1000;
+            const endTime = to*1000;
+
+            console.log(startTime ,"this is start time")
 
             candles.forEach(candle => {
                 const candleTime = new Date(candle[0]).getTime();
-                if (candleTime >= startTime && candleTime <= endTime) {
+                console.log(candle ,"this data rohit")
+
+
                     const barTime = convertToGMTMidnight(candle[0], resolution);
                     bars.push({
                         time: barTime,
@@ -195,8 +202,9 @@ export default {
                         close: candle[4],
                         volume: candle[5],
                     });
-                }
+                
             });
+            console.log(bars ,"this is my bars")
             onHistoryCallback(bars, { noData: bars.length === 0 });
         } catch (error) {
             console.error('[getBars]: Error occurred', error);

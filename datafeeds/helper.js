@@ -15,8 +15,6 @@ function convertUnixTimestampToZerodhaFormat(unixTimestamp) {
 
 export async function makeApiRequest(from, to, instumentkey, resolution,countBack) {
     try {
-        let froms = convertUnixTimestampToZerodhaFormat(from);
-        let tos = convertUnixTimestampToZerodhaFormat(to);
         const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/historical-data`;
 
 
@@ -47,10 +45,10 @@ export async function makeApiRequest(from, to, instumentkey, resolution,countBac
                 interval = 'day';
                 break;
             case '1W':
-                interval = 'day';
+                interval = 'week';
                 break;
             case '1M':
-                interval = 'day';
+                interval = 'month';
                 break;
             default:
                 throw new Error('Unsupported resolution');
@@ -58,8 +56,8 @@ export async function makeApiRequest(from, to, instumentkey, resolution,countBac
 
         const response = await axios.post(url, {
             instrument_token: instumentkey,
-            from: froms,
-            to: tos,
+            from,
+            to,
             interval: interval,
             count:countBack
         });
