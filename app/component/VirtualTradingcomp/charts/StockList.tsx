@@ -14,72 +14,73 @@ import StockSearchBox from "./StockSearchBox";
 import 'react-toastify/dist/ReactToastify.css';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { MyContext } from "@/context/symbolecontext";
+import { BiDownArrow, BiUpArrow } from "react-icons/bi";
 
 const StockList = () => {
-   //@ts-ignore
-   const { value, setValue, stockData } = useContext<any>(MyContext); 
-   const [stocks, setStocks] = useState<any[]>([]);
-   const [selectedStock, setSelectedStock] = useState<any>(value || null);
-   const [showDrawer, setShowDrawer] = useState<boolean>(false);
-   const [showNewsDrawer, setShowNewsDrawer] = useState<boolean>(false);
-   const [action, setAction] = useState<"buy" | "sell" | null>(null);
-   const [hoveredStock, setHoveredStock] = useState<string | null>(null);
-   const [error, setError] = useState<string | null>(null);
-   const [selectedTab, setSelectedTab] = useState<"chart" | "orders" | "holdings" | "position">("chart");
-   const [page, setPage] = useState(1);
-   const [hasMore, setHasMore] = useState(true);
- 
-   const fetchMoreStocks = async () => {
-     try {
-       const stockData = await GetSymbolForDrawer();
-       setStocks(stockData)
-     } catch (error) {
-       console.error("Failed to fetch stock data:", error);
-     }
-   };
- 
-   useEffect(() => {
-     fetchMoreStocks();
-   }, []);
- 
-   const handleStockClick = (instrumentKey: string, symbol: any) => {
-    setSelectedStock(instrumentKey); 
-    setValue(symbol); 
+  //@ts-ignore
+  const { value, setValue, stockData } = useContext<any>(MyContext);
+  const [stocks, setStocks] = useState<any[]>([]);
+  const [selectedStock, setSelectedStock] = useState<any>(value || null);
+  const [showDrawer, setShowDrawer] = useState<boolean>(false);
+  const [showNewsDrawer, setShowNewsDrawer] = useState<boolean>(false);
+  const [action, setAction] = useState<"buy" | "sell" | null>(null);
+  const [hoveredStock, setHoveredStock] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedTab, setSelectedTab] = useState<"chart" | "orders" | "holdings" | "position">("chart");
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
+  const fetchMoreStocks = async () => {
+    try {
+      const stockData = await GetSymbolForDrawer();
+      setStocks(stockData)
+    } catch (error) {
+      console.error("Failed to fetch stock data:", error);
+    }
   };
-  
- 
-   const handleBuyStock = () => {
-     setAction("buy");
-     setShowDrawer(true);
-   };
- 
-   const handleSellStock = () => {
-     setAction("sell");
-     setShowDrawer(true);
-   };
- 
-   const closeDrawer = () => {
-     setShowDrawer(false);
-   };
- 
-   const renderSelectedComponent = () => {
-     switch (selectedTab) {
-       case "chart":
-         return <TradingViewChart />;
-       case "orders":
-         return <Orders selectedStock={selectedStock} />;
-       case "holdings":
-         return <Holdings selectedStock={selectedStock} />;
-       case "position":
-         return <Position selectedStock={selectedStock} />;
-       default:
-         return <TradingViewChart />;
-     }
-   };
- 
-   const selectedStockData = stockData[selectedStock] || {};
-   const price = selectedStockData.last_price || "0.0";
-   
+
+  useEffect(() => {
+    fetchMoreStocks();
+  }, []);
+
+  const handleStockClick = (instrumentKey: string, symbol: any) => {
+    setSelectedStock(instrumentKey);
+    setValue(symbol);
+  };
+
+
+  const handleBuyStock = () => {
+    setAction("buy");
+    setShowDrawer(true);
+  };
+
+  const handleSellStock = () => {
+    setAction("sell");
+    setShowDrawer(true);
+  };
+
+  const closeDrawer = () => {
+    setShowDrawer(false);
+  };
+
+  const renderSelectedComponent = () => {
+    switch (selectedTab) {
+      case "chart":
+        return <TradingViewChart />;
+      case "orders":
+        return <Orders selectedStock={selectedStock} />;
+      case "holdings":
+        return <Holdings selectedStock={selectedStock} />;
+      case "position":
+        return <Position selectedStock={selectedStock} />;
+      default:
+        return <TradingViewChart />;
+    }
+  };
+
+  const selectedStockData = stockData[selectedStock] || {};
+  const price = selectedStockData.last_price || '0.0';
+
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <div className="flex flex-grow">
@@ -92,65 +93,65 @@ const StockList = () => {
 
           <StockSearchBox />
 
-         
-            {stocks.length > 0 ? (
-              stocks.map(({ symbol, instrumentKey, exchange }, index) => {
-                const stockInfo = stockData[instrumentKey] || {};
-                const price = stockInfo.last_price || "0.0";
-                const openPrice = stockInfo.ohlc?.close || 0;
-                const change = price !== "0.0" ? (price - openPrice).toFixed(2) : "0";
-                const percentage =
-                  openPrice !== 0
-                    ? ((Number(change) / openPrice) * 100).toFixed(2)
-                    : "0";
 
-                return (
-                  <div
-                    key={instrumentKey}
-                    className={`stockcard p-2 py-2 flex justify-between items-center border-b hover:bg-gray-100 cursor-pointer ${symbol === selectedStock ? "bg-gray-200" : ""
-                      }`}
-                    onMouseEnter={() => setHoveredStock(symbol)}
-                    onMouseLeave={() => setHoveredStock(null)}
-                    onClick={() => handleStockClick(instrumentKey, symbol)}
-                  >
-                    <div>
-                      <div className="font-normal text-xs">{symbol}</div>
-                      <div className="text-xs text-gray-500">{exchange} EQ</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm">{price}</div>
-                      <div
-                        className={`text-sm ml-2 ${Number(change) >= 0 ? "text-green-500" : "text-red-500"
-                          }`}
-                      >
-                        {change} ({percentage}%)
-                      </div>
-                    </div>
-                    {hoveredStock === symbol && (
-                      <div className="mt-2 flex gap-2">
-                        <button
-                          className="bg-green-500 text-white px-2 py-1 rounded-full text-xs"
-                          onClick={handleBuyStock}
-                        >
-                          Buy
-                        </button>
-                        <button
-                          className="bg-red-500 text-white px-2 py-1 rounded-full text-xs"
-                          onClick={handleSellStock}
-                        >
-                          Sell
-                        </button>
-                      </div>
-                    )}
+          {stocks.length > 0 ? (
+            stocks.map(({ symbol, instrumentKey, exchange }, index) => {
+              const stockInfo = stockData[instrumentKey] || {};
+              const price = stockInfo.last_price || "0.0";
+              const openPrice = stockInfo.ohlc?.close || 0;
+              const change = price !== "0.0" ? (price - openPrice).toFixed(2) : "0";
+              const percentage =
+                openPrice !== 0
+                  ? ((Number(change) / openPrice) * 100).toFixed(2)
+                  : "0";
+
+              return (
+                <div
+                  key={instrumentKey}
+                  className={`stockcard p-2 py-2 flex justify-between items-center border-b hover:bg-gray-100 cursor-pointer ${symbol === selectedStock ? "bg-gray-200" : ""
+                    }`}
+                  onMouseEnter={() => setHoveredStock(symbol)}
+                  onMouseLeave={() => setHoveredStock(null)}
+                  onClick={() => handleStockClick(instrumentKey, symbol)}
+                >
+                  <div>
+                    <div className="font-normal text-xs">{symbol}</div>
+                    <div className="text-xs text-gray-500">{exchange} EQ</div>
                   </div>
-                );
-              })
-            ) : (
-              <div className="text-center py-4">
-                <StockSkeleton />
-                <StockSkeleton />
-              </div>
-            )}
+                  <div className="text-right">
+                    <div className="text-sm">{price}</div>
+                    <div
+                      className={`text-sm ml-2 ${Number(change) >= 0 ? "text-green-500" : "text-red-500"
+                        }`}
+                    >
+                      {change} ({percentage}%)
+                    </div>
+                  </div>
+                  {hoveredStock === symbol && (
+                    <div className="mt-2 flex gap-2">
+                      <button
+                        className="bg-green-500 text-white px-2 py-1 rounded-full text-xs"
+                        onClick={handleBuyStock}
+                      >
+                        Buy
+                      </button>
+                      <button
+                        className="bg-red-500 text-white px-2 py-1 rounded-full text-xs"
+                        onClick={handleSellStock}
+                      >
+                        Sell
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          ) : (
+            <div className="text-center py-4">
+              <StockSkeleton />
+              <StockSkeleton />
+            </div>
+          )}
         </div>
 
         <div className="w-full md:w-3/4 h-full flex flex-col">
@@ -189,21 +190,32 @@ const StockList = () => {
               </li>
             </ul>
 
-            {/* Fetch dynamic Nifty, Sensex, and Nifty Bank values */}
             <ul className="flex gap-10 text-xs">
-              <li>
-                <p className="text-sm">Nifty50</p>
-                <span className={`text-green-600`}>{stockData['Nifty50']?.last_price || "19,600"} ↑</span>
-              </li>
-              <li>
-                <p className="text-sm">Sensex</p>
-                <span className={`text-red-600`}>{stockData['Sensex']?.last_price || "65,000"} ↓</span>
-              </li>
-              <li>
-                <p className="text-sm">Nifty Bank</p>
-                <span className={`text-green-600`}>{stockData['NiftyBank']?.last_price || "45,300"} ↑</span>
-              </li>
+              {[
+                { label: 'Nifty50', key: '256265' },
+                { label: 'Sensex', key: 'Sensex' },
+                { label: 'Nifty Bank', key: '260105' },
+              ].map(({ label, key }) => {
+                const stockInfo = stockData[key] || {};
+                const price = stockInfo.last_price || "0.0";
+                const openPrice = stockInfo.ohlc?.close || 0; // Previous close price
+                const change = price !== "0.0" ? (price - openPrice).toFixed(2) : "0.00";
+                const percentage = openPrice !== 0 ? ((Number(change) / openPrice) * 100).toFixed(2) : "0.00";
+                const isPositive = Number(change) >= 0;
+
+                return (
+                  <li key={key} className={`flex flex-col items-center`}>
+                    <p className="text-sm ">{label}</p>
+                    <div className={`flex items-center text-${isPositive ? 'green' : 'red'}-600`}>
+                      <span className="text-sm font">{price}</span>
+                      {isPositive ? <BiUpArrow className="ml-1 text-sm" /> : <BiDownArrow className="ml-1 text-lg" />}
+                      <span className={`ml-1 text-sm`}>{isPositive ? `(+${percentage}%)` : `(${percentage}%)`}</span>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
+
           </div>
 
           <div className="flex-grow overflow-hidden">

@@ -9,16 +9,16 @@ function convertUnixTimestampToZerodhaFormat(unixTimestamp) {
     const minutes = String(date.getUTCMinutes()).padStart(2, '0');
     const seconds = String(date.getUTCSeconds()).padStart(2, '0');
 
-    
+
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
+let isFirstCall = true;
 
-export async function makeApiRequest(from, to, instumentkey, resolution,countBack) {
+export async function makeApiRequest(from, to, instrumentKey, resolution, countBack) {
     try {
         const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/historical-data`;
 
-
-        let interval; 
+        let interval;
         switch (resolution) {
             case '1':
                 interval = 'minute';
@@ -54,12 +54,19 @@ export async function makeApiRequest(from, to, instumentkey, resolution,countBac
                 throw new Error('Unsupported resolution');
         }
 
+        if (isFirstCall) {
+            to = Math.floor(Date.now() / 1000) - 1;
+            isFirstCall = false;
+            console.log(to ,"this to")
+        }
+console.log(to,from ,"this is my time")
+
         const response = await axios.post(url, {
-            instrument_token: instumentkey,
+            instrument_token: instrumentKey,
             from,
             to,
             interval: interval,
-            count:countBack
+            count: countBack
         });
 
         const data = await response.data.candles;

@@ -89,9 +89,10 @@ export const StockSkeleton = () => {
 
 
 
-
-export const CharSkeleton = () => {
-  return (<div className="stockcard p-2 py-2 w-fit flex justify-between items-center border-b  bg-gray-300 blur-md cursor-pointer">
-  </div>
-  )
-}
+export const PriceSkeleton = () => {
+  return (
+    <div className="flex items-center">
+      <div className="animate-pulse w-16 h-4 bg-gray-300 rounded" />
+    </div>
+  );
+};
