@@ -1,7 +1,7 @@
 import { makeApiRequest } from './helper.js';
 import { getAllSymbols } from './stocks.js';
 
-const ws = new WebSocket('ws://localhost:8000/virtual');
+const ws = new WebSocket('ws://13.56.227.239:8000/virtual');
 let subscribers = {};
 let liveData = {};
 
