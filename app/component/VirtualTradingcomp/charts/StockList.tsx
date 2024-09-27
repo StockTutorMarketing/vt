@@ -78,6 +78,8 @@ const StockList = () => {
     }
   };
 
+
+
   const selectedStockData = stockData[selectedStock] || {};
   const price = selectedStockData.last_price || '0.0';
 

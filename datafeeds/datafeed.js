@@ -1,7 +1,7 @@
 import { makeApiRequest } from './helper.js';
 import { getAllSymbols } from './stocks.js';
 
-const ws = new WebSocket('ws://13.56.227.239:8000/virtual');
+const ws = new WebSocket('ws://localhost:8000/virtual');
 let subscribers = {};
 let liveData = {};
 
@@ -30,7 +30,7 @@ ws.onclose = () => {
 ws.onmessage = (event) => {
     if (event.data === "pong") {
         console.log("Received pong response from server");
-        return; 
+        return;
     }
 
     try {
@@ -53,114 +53,50 @@ const configurationData = {
     ]
 };
 function processLiveFeed(feeds) {
+    const timestamp = new Date(feeds.exchange_timestamp).getTime();
+    const price = feeds.last_price;
+
     Object.keys(subscribers).forEach(subscriberUID => {
         const { onRealtimeCallback, symbolInfo } = subscribers[subscriberUID];
         const symbolKey = symbolInfo.instrumentKey;
 
-        if (feeds.instrument_token) {
-            const timestamp = new Date(feeds.exchange_timestamp).getTime();
-            const price = feeds.last_price;
+        const lastBar = liveData[symbolKey]?.[liveData[symbolKey].length - 1];
+        const newBarTime = Math.floor(timestamp / 1000) * 1000; 
 
-            if (!isNaN(timestamp)) {
-                if (!liveData[symbolKey]) {
-                    liveData[symbolKey] = [];
-                }
-
-                const lastBar = liveData[symbolKey][liveData[symbolKey].length - 1];
-                const newBarTime = Math.floor(timestamp / 60000) * 60000;
-
-                if (lastBar && lastBar.time === newBarTime) {
-                    lastBar.close = price;
-                    lastBar.high = Math.max(lastBar.high, price);
-                    lastBar.low = Math.min(lastBar.low, price);
-                    lastBar.volume += feeds.volume_traded || 0; // Default to 0 if undefined
-                } else {
-                    const newBar = {
-                        time: newBarTime,
-                        open: price,
-                        close: price,
-                        high: price,
-                        low: price,
-                        volume: feeds.volume_traded || 0 // Default to 0 if undefined
-                    };
-                    liveData[symbolKey].push(newBar);
-                }
-
-                onRealtimeCallback({
-                    time: newBarTime,
-                    close: price,
-                    open: lastBar ? lastBar.open : price,
-                    high: lastBar ? Math.max(lastBar.high, price) : price,
-                    low: lastBar ? Math.min(lastBar.low, price) : price,
-                    volume: feeds.volume_traded || 0 // Default to 0 if undefined
-                });
-            } else {
-                console.error('Invalid timestamp:', feeds.exchange_timestamp);
-            }
+        if (lastBar && lastBar.time === newBarTime) {
+            lastBar.close = price;
+            lastBar.high = Math.max(lastBar.high, price);
+            lastBar.low = Math.min(lastBar.low, price);
+            lastBar.volume += feeds.volume_traded || 0;
         } else {
-            console.error('No instrument token in feeds:', feeds);
+            const newBar = {
+                time: newBarTime,
+                open: price,
+                close: price,
+                high: price,
+                low: price,
+                volume: feeds.volume_traded || 0
+            };
+            if (!liveData[symbolKey]) {
+                liveData[symbolKey] = [];
+            }
+            liveData[symbolKey].push(newBar);
         }
+
+        // Trigger the realtime update for the chart
+        onRealtimeCallback({
+            time: newBarTime,
+            close: price,
+            open: lastBar ? lastBar.open : price,
+            high: lastBar ? Math.max(lastBar.high, price) : price,
+            low: lastBar ? Math.min(lastBar.low, price) : price,
+            volume: feeds.volume_traded || 0
+        });
     });
 }
 
-function processBars(feed) {
-    const ohlc = feed.ff.marketFF.marketOHLC.ohlc;
-
-    if (!ohlc || !Array.isArray(ohlc)) {
-        return {
-            s: 'error',
-            t: [],
-            o: [],
-            h: [],
-            l: [],
-            c: [],
-            v: []
-        };
-    }
-
-    const times = [];
-    const opens = [];
-    const highs = [];
-    const lows = [];
-    const closes = [];
-    const volumes = [];
-
-    ohlc.forEach(bar => {
-        const barTime = validateTimestamp(parseInt(bar.ts));
-        if (barTime === null) return;
-
-        times.push(barTime);
-        opens.push(bar.open);
-        highs.push(bar.high);
-        lows.push(bar.low);
-        closes.push(bar.close);
-        volumes.push(bar.volume);
-    });
-
-    return {
-        s: 'ok',
-        t: times,
-        o: opens,
-        h: highs,
-        l: lows,
-        c: closes,
-        v: volumes
-    };
-}
 
 
-// Validate timestamp
-function validateTimestamp(timestamp) {
-    return isNaN(timestamp) ? null : timestamp;
-}
-
-function convertToGMTMidnight(candleTime, resolution) {
-    const date = new Date(candleTime);
-    if (resolution.endsWith('D') || resolution.endsWith('W') || resolution.endsWith('M')) {
-        date.setUTCHours(0, 0, 0, 0);
-    }
-    return date.getTime();
-}
 
 export default {
     onReady: (callback) => {
@@ -217,9 +153,8 @@ export default {
             const candles = data;
             let bars = [];
             candles.forEach(candle => {
-                const barTime = convertToGMTMidnight(candle[0], resolution);
                 bars.push({
-                    time: barTime,
+                    time: candle[0],
                     low: candle[3],
                     high: candle[2],
                     open: candle[1],
@@ -251,7 +186,7 @@ export default {
         delete subscribers[subscriberUID];
 
         if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'unsubscribe', symbol: symbolInfo.ticker }));
+            // ws.send(JSON.stringify({ type: 'unsubscribe', symbol: symbolInfo.ticker }));
         }
     }
 };
