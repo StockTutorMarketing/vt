@@ -5,11 +5,12 @@ import { toast } from "react-toastify";
 export const MyContext = createContext(undefined);
 
 export const MyProvider = ({ children }) => {
-  const [value, setValue] = useState("ZOMATO");
+  const [value, setValue] = useState("RENUKA");
   const [socket, setSocket] = useState(null);
   const [stockData, setStockData] = useState({});
   const [error, setError] = useState(null);
   const [newTokens, setNewTokens] = useState([]);
+  const [selectedTab, setSelectedTab] = useState("chart");
 
   useEffect(() => {
     const newSocket = new WebSocket(process.env.NEXT_PUBLIC_WEBSOCKET);
@@ -66,7 +67,7 @@ export const MyProvider = ({ children }) => {
   const subscribeToTokens = (socket) => {
     const tokensToSubscribe = [
       128083204, 128108804, 256265, 260105, 139321604, 82945, 1756929, 4343041,
-      128211204, 139109380, 1304833, 5215745, 128046084, ...newTokens,
+      128211204, 139109380, 1304833, 5215745, 128046084,262409, ...newTokens,
     ];
     socket.send(JSON.stringify({ type: "subscribe", tokens: tokensToSubscribe }));
   };
@@ -122,7 +123,7 @@ export const MyProvider = ({ children }) => {
 
   return (
     <MyContext.Provider
-      value={{ value, setValue, socket, stockData, error, setNewTokens, sendBuyOrder, sendSellOrder }}
+      value={{ value, setValue, socket, stockData, error, setNewTokens, sendBuyOrder, sendSellOrder,selectedTab,setSelectedTab }}
     >
       {children}
     </MyContext.Provider>

@@ -38,7 +38,7 @@ const dummyOrders: OrderData[] = [
 
 const Orders = ({ selectedStock }: any) => {
   return (
-    <div className="orders-container mt-4 h-full bg-white shadow-md rounded-md">
+    <div className="orders-container  h-full bg-white shadow-md rounded-md">
       <div className="header-stats flex justify-between items-center p-2 border-t-2 bg-gray-100 mb-2">
         <div className="stat">
           <span className="text-sm text-black">Order ID</span>

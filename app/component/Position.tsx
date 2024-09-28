@@ -10,30 +10,14 @@ interface StockData {
 }
 
 const Position = ({ selectedStock }: any) => {
-  // Dummy JSON data to simulate holdings
   const dummyHoldings: StockData[] = [
-    // {
-    //   symbol: 'AAPL',
-    //   netQty: 10,
-    //   avgPrice: 150,
-    //   ltp: 155,
-    //   currentValue: 1550,
-    //   dayPL: 50,
-    // },
-    // {
-    //   symbol: 'MSFT',
-    //   netQty: 5,
-    //   avgPrice: 300,
-    //   ltp: 305,
-    //   currentValue: 1525,
-    //   dayPL: 25,
-    // },
+
   ];
 
   const holdings = dummyHoldings; // You can replace this with your actual data fetching logic
 
   return (
-    <div className="holdings-container mt-4 h-full bg-white shadow-md rounded-md">
+    <div className="holdings-container  h-full bg-white shadow-md rounded-md">
       <div className="">
         <div className="header-stats flex justify-between items-center p-2 border-t-2 bg-gray-100 mb-2">
           <div className="stat">

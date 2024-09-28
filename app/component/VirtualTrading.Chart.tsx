@@ -13,21 +13,18 @@ const TradingViewChart = () => {
     if (!chartContainerRef.current) return;
     const widgetOptions = {
       symbol: symbol || 'ZOMATO',
-      interval: "15",
+      interval: "1",
       container: chartContainerRef.current,
       datafeed: TradingViewDataFeed,
       library_path: "/static/charting_library/",
       fullscreen: false,
       autosize: true,
       symbol_search_request_delay: 1000,
+      buy_sell_buttons:true,
       timezone: "exchange",
       debug: true,
       session_holidays:["1726906623,1726993023,1727049600,1704153600,1730419200,1706822400,1709836800,1712793600,1731609600,1713312000,1718582400,1721385600,1716163200,1705900800,1711324800,1735084800,1706227200,1711670400"]
     };
-
-
-
-   
 
     const script = document.createElement("script");
     script.src = "/static/charting_library/charting_library.js";
@@ -36,6 +33,7 @@ const TradingViewChart = () => {
       tvWidgetRef.current = new TradingView.widget(widgetOptions);
     };
 
+    
     document.body.appendChild(script);
 
     return () => {
@@ -51,7 +49,7 @@ const TradingViewChart = () => {
   return (
     <div
       ref={chartContainerRef}
-      style={{display:"fixed",bottom:"40px", width: "100%", height: "100%" }}
+      style={{display:"fixed",width: "100%", height: "100%" }}
     />
   );
 };

@@ -1,7 +1,7 @@
 import { makeApiRequest } from './helper.js';
 import { getAllSymbols } from './stocks.js';
 
-const ws = new WebSocket('ws://13.56.227.239:8000/virtual');
+let ws = new WebSocket('ws://13.56.227.239:8000/virtual');
 let subscribers = {};
 let liveData = {};
 
@@ -23,9 +23,19 @@ ws.onopen = () => {
 };
 
 ws.onclose = () => {
+    console.log("WebSocket connection closed. Reconnecting...");
     clearInterval(pingInterval);
-    console.log("WebSocket connection closed");
+
+    setTimeout(() => {
+        ws = new WebSocket('ws://13.56.227.239:8000/virtual');
+        Object.keys(subscribers).forEach(subscriberUID => {
+            const { symbolInfo } = subscribers[subscriberUID];
+            const tokens = symbolInfo.instrumentKey;
+            ws.send(JSON.stringify({ type: 'subscribe', tokens: [tokens] }));
+        });
+    }, 3000);
 };
+
 
 ws.onmessage = (event) => {
     if (event.data === "pong") {
@@ -61,7 +71,7 @@ function processLiveFeed(feeds) {
         const symbolKey = symbolInfo.instrumentKey;
 
         const lastBar = liveData[symbolKey]?.[liveData[symbolKey].length - 1];
-        const newBarTime = Math.floor(timestamp / 1000) * 1000; 
+        const newBarTime = Math.floor(timestamp / 1000) * 1000;
 
         if (lastBar && lastBar.time === newBarTime) {
             lastBar.close = price;
@@ -149,7 +159,6 @@ export default {
         try {
             const instrumentKey = symbolInfo.instrumentKey;
             const data = await makeApiRequest(from, to, instrumentKey, resolution, countBack);
-
             const candles = data;
             let bars = [];
             candles.forEach(candle => {
@@ -184,9 +193,8 @@ export default {
     unsubscribeBars: (subscriberUID) => {
         const symbolInfo = subscribers[subscriberUID].symbolInfo;
         delete subscribers[subscriberUID];
-
         if (ws.readyState === WebSocket.OPEN) {
-            // ws.send(JSON.stringify({ type: 'unsubscribe', symbol: symbolInfo.ticker }));
+            ws.send(JSON.stringify({ type: 'unsubscribe', symbol: symbolInfo.instrumentKey }));
         }
     }
 };

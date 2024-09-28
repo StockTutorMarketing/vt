@@ -61,34 +61,32 @@ const StockDrawer: React.FC<StockDrawerProps> = ({
     setAction((prevAction: any) => (prevAction === "buy" ? "sell" : "buy"));
   };
   const handleTransaction = async () => {
-    // Validation
     if (!quantity || (!isMarketOrder && !price)) {
       setError("Please fill in all required fields.");
       toast.error("Please provide valid quantity and price!");
       return;
     }
-  
-    // Ensure the stock is tradable
-    if (!stock?.tradable) {
+      if (!stock?.tradable) {
       toast.error("This stock is not tradable at the moment.");
       return;
     }
   
     const orderData = {
-      userId: '66557e723a8280a59275d1d9',
+      userId: '66d7f6e3976bae8f8a3f6616',
       instrument_token: stock?.instrument_token,
       marketPrice: marketPrice,
       bought_qty: parseInt(quantity),
       symbol: value,
     };
   
-    sendBuyOrder(orderData)
+    let result=sendBuyOrder(orderData)
       .then((response:any) => {
         if (response.status === "success") {
           toast.success(response.message);
         } else {
           toast.error(`Order Error: ${response.message}`);
         }
+        console.log(result ,"this is my response")
         closeDrawer();
       })
       .catch((error:any) => {

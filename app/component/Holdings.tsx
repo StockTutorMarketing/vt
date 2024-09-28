@@ -10,7 +10,6 @@ interface StockData {
 }
 
 const Holdings = ({ selectedStock }: any) => {
-  // Dummy JSON data to simulate holdings
   const dummyHoldings: StockData[] = [
     {
       symbol: 'AAPL',
@@ -38,7 +37,7 @@ const Holdings = ({ selectedStock }: any) => {
   const overallPL = totalCurrentValue - totalInvestment;
 
   return (
-    <div className="holdings-container mt-4 h-full bg-white shadow-md rounded-md">
+    <div className="holdings-container  h-full bg-white shadow-md rounded-md">
       <div className="summary-box p-4 bg-gray-100 border border-gray-200 rounded-md mb-4">
         <div className="grid grid-cols-3 gap-4">
           <div className="summary-item p-3 bg-white border border-gray-300 rounded-md shadow-sm">

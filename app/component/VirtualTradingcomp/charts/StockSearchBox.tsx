@@ -19,11 +19,7 @@ export default function StockSearchBox() {
 
             getAllSymbols(searchQuery)
                 .then((data) => {
-                    const limitedResults = data.slice(0, 6); 
-                    if (limitedResults.length === 0) {
-                        setNoResults(true);
-                    }
-                    setSearchResults(limitedResults);
+                    setSearchResults(data);
                 })
                 .catch((error) => {
                     console.error('Error fetching search results:', error);
@@ -39,20 +35,20 @@ export default function StockSearchBox() {
 
     const handleClick = (result: any) => {
         setValue(result?.symbol);
-        setClicked(false); 
-        setSearchQuery(''); 
+        setClicked(false);
+        setSearchQuery('');
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
-        setClicked(true); 
+        setClicked(true);
     };
 
     return (
         <div className="relative mb-4">
             <input
                 type="text"
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Stocks, Futures & Options"
                 value={searchQuery}
                 onChange={handleInputChange}
@@ -60,7 +56,7 @@ export default function StockSearchBox() {
             <CiSearch className="absolute right-2 top-2 text-gray-400" size={20} />
 
             {searchQuery && clicked && (
-                <div className="absolute top-full left-0 w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10">
+                <div className="absolute top-full left-0 w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10 overflow-hidden">
                     {loading ? (
                         <div className="p-4 text-center">
                             <StockSkeleton />
@@ -72,19 +68,21 @@ export default function StockSearchBox() {
                             </div>
                         </div>
                     ) : (
-                        searchResults.map((result: any, index) => (
-                            <div
-                                key={index}
-                                className="flex items-center justify-between px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                onClick={() => handleClick(result)}
-                            >
-                                <div>
-                                    <p className="text-sm font-medium">{result?.symbol}</p>
-                                    <p className="text-xs text-gray-500">{result?.exchange}</p>
+                        <div className="max-h-[23rem] overflow overflow-y-auto ">
+                            {searchResults.map((result: any, index) => (
+                                <div
+                                    key={index}
+                                    className="flex items-center justify-between px-4 py-2 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out"
+                                    onClick={() => handleClick(result)}
+                                >
+                                    <div>
+                                        <p className="text-sm font-medium">{result?.symbol}</p>
+                                        <p className="text-xs text-gray-500">{result?.exchange}</p>
+                                    </div>
+                                    <CiSearch size={16} className="text-gray-400" />
                                 </div>
-                                <CiSearch size={16} className="text-gray-400" />
-                            </div>
-                        ))
+                            ))}
+                        </div>
                     )}
                 </div>
             )}

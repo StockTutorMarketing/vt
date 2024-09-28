@@ -12,7 +12,6 @@ function convertUnixTimestampToZerodhaFormat(unixTimestamp) {
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
-let isFirstCall = true;
 
 export async function makeApiRequest(from, to, instrumentKey, resolution, countBack) {
     try {
@@ -54,18 +53,11 @@ export async function makeApiRequest(from, to, instrumentKey, resolution, countB
                 throw new Error('Unsupported resolution');
         }
 
-        if (isFirstCall) {
-            to = Math.floor(Date.now() / 1000) - 1;
-            isFirstCall = false;
-            console.log(to ,"this to")
-        }
-console.log(to,from ,"this is my time")
-
         const response = await axios.post(url, {
             instrument_token: instrumentKey,
             from,
             to,
-            interval: interval,
+            interval,
             count: countBack
         });
 
