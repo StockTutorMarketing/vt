@@ -26,14 +26,14 @@ ws.onclose = () => {
     console.log("WebSocket connection closed. Reconnecting...");
     clearInterval(pingInterval);
 
-    setTimeout(() => {
-        ws = new WebSocket('ws://13.56.227.239:8000/virtual');
-        Object.keys(subscribers).forEach(subscriberUID => {
-            const { symbolInfo } = subscribers[subscriberUID];
-            const tokens = symbolInfo.instrumentKey;
-            ws.send(JSON.stringify({ type: 'subscribe', tokens: [tokens] }));
-        });
-    }, 3000);
+    // setTimeout(() => {
+    //     ws = new WebSocket('ws://13.56.227.239:8000/virtual');
+    //     Object.keys(subscribers).forEach(subscriberUID => {
+    //         const { symbolInfo } = subscribers[subscriberUID];
+    //         const tokens = symbolInfo.instrumentKey;
+    //         ws.send(JSON.stringify({ type: 'subscribe', tokens: [tokens] }));
+    //     });
+    // }, 3000);
 };
 
 

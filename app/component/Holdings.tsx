@@ -9,23 +9,15 @@ interface StockData {
   dayPL: number; // Day Profit & Loss
 }
 
-const Holdings = ({ selectedStock }: any) => {
+const Holdings = () => {
   const dummyHoldings: StockData[] = [
     {
-      symbol: 'AAPL',
+      symbol: 'ANGELONE',
       netQty: 10,
-      avgPrice: 150,
-      ltp: 155,
-      currentValue: 1550,
-      dayPL: 50,
-    },
-    {
-      symbol: 'MSFT',
-      netQty: 5,
-      avgPrice: 300,
-      ltp: 305,
-      currentValue: 1525,
-      dayPL: 25,
+      avgPrice: 2532,
+      ltp: 2532.3,
+      currentValue: 2532.3 * 10, // Total current value
+      dayPL: (2532.3 * 10) - (2532 * 10), // Day P&L calculation
     },
   ];
 
@@ -37,19 +29,19 @@ const Holdings = ({ selectedStock }: any) => {
   const overallPL = totalCurrentValue - totalInvestment;
 
   return (
-    <div className="holdings-container  h-full bg-white shadow-md rounded-md">
+    <div className="holdings-container h-full bg-white shadow-md rounded-md">
       <div className="summary-box p-4 bg-gray-100 border border-gray-200 rounded-md mb-4">
         <div className="grid grid-cols-3 gap-4">
           <div className="summary-item p-3 bg-white border border-gray-300 rounded-md shadow-sm">
             <div className="text-sm text-gray-600">Total Investment</div>
             <div className="text-lg font-bold text-gray-800">
-            ₹{totalInvestment.toFixed(2)}
+              ₹{totalInvestment.toFixed(2)}
             </div>
           </div>
           <div className="summary-item p-3 bg-white border border-gray-300 rounded-md shadow-sm">
             <div className="text-sm text-gray-600">Current Value</div>
             <div className="text-lg font-bold text-gray-800">
-            ₹{totalCurrentValue.toFixed(2)}
+              ₹{totalCurrentValue.toFixed(2)}
             </div>
           </div>
           <div className="summary-item p-3 bg-white border border-gray-300 rounded-md shadow-sm">
@@ -100,10 +92,12 @@ const Holdings = ({ selectedStock }: any) => {
                 <span className="text-sm text-black">{stock.ltp}</span>
               </div>
               <div className="stat">
-                <span className="text-sm text-black">{stock.currentValue}</span>
+                <span className="text-sm text-black">₹{stock.currentValue.toFixed(2)}</span>
               </div>
               <div className="stat">
-                <span className="text-sm text-black">{stock.dayPL}</span>
+                <span className={`text-sm text-black ${stock.dayPL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {stock.dayPL >= 0 ? `+${stock.dayPL.toFixed(2)}` : `${stock.dayPL.toFixed(2)}`}
+                </span>
               </div>
             </div>
           ))}

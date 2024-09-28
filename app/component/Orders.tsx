@@ -13,25 +13,25 @@ const dummyOrders: OrderData[] = [
   {
     orderId: '12345',
     type: 'buy',
-    symbol: 'AAPL',
+    symbol: 'ANGELONE',
     quantity: 10,
-    price: 150,
+    price: 2532.3,
     status: 'completed',
   },
   {
     orderId: '12346',
-    type: 'sell',
-    symbol: 'MSFT',
+    type: 'buy',
+    symbol: 'PAYTM',
     quantity: 5,
-    price: 300,
+    price: 672.4,
     status: 'pending',
   },
   {
     orderId: '12347',
     type: 'buy',
-    symbol: 'GOOGL',
+    symbol: 'ZOMATO',
     quantity: 8,
-    price: 2800,
+    price: 278.15,
     status: 'cancelled',
   },
 ];
@@ -79,7 +79,7 @@ const Orders = ({ selectedStock }: any) => {
                 <span className="text-sm text-black">{order.quantity}</span>
               </div>
               <div className="stat">
-                <span className="text-sm text-black">${order.price.toFixed(2)}</span>
+                <span className="text-sm text-black"> ₹ {order.price*order.quantity}</span>
               </div>
               <div className="stat">
                 <span className={`text-sm ${order.status === 'completed' ? 'text-green-600' : order.status === 'pending' ? 'text-yellow-600' : 'text-red-600'}`}>

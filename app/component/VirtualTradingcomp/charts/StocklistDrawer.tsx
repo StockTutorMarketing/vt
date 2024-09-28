@@ -12,7 +12,7 @@ export default function StocklistDrawer() {
   const [selectedStockData, setSelectedStockData] = useState<any>(null);
   const [hoveredStock, setHoveredStock] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showDrawer, setShowDrawer] = useState(false); 
+  const [showDrawer, setShowDrawer] = useState(false);
   const [action, setAction] = useState<"buy" | "sell" | null>(null);
   const [stocks, setStocks] = useState<any[]>([]);
 
@@ -40,7 +40,6 @@ export default function StocklistDrawer() {
     const totalGain = price !== "0.0" ? (parseFloat(price) - openPrice).toFixed(2) : "0.0";
     const percentageGain = openPrice !== 0 ? ((parseFloat(totalGain) / openPrice) * 100).toFixed(2) : "0.0";
 
-    // Update selected stock data
     setSelectedStockData({
       symbol,
       price,
@@ -49,11 +48,7 @@ export default function StocklistDrawer() {
       percentageGain,
       ...selectedStockInfo,
     });
-
-    // Set the document title
     document.title = `${symbol} ${price} (${totalGain}) (${percentageGain}%)`;
-
-    setAction(null);
   };
 
   const closeDrawer = () => {
@@ -61,17 +56,15 @@ export default function StocklistDrawer() {
   };
 
   const handleBuyStock = (e: React.MouseEvent, instrumentKey: string, symbol: any) => {
-    e.stopPropagation();
     setAction("buy");
     handleStockClick(instrumentKey, symbol);
-    setShowDrawer(true); 
+    setShowDrawer(true);
   };
 
   const handleSellStock = (e: React.MouseEvent, instrumentKey: string, symbol: any) => {
-    e.stopPropagation();
     setAction("sell");
     handleStockClick(instrumentKey, symbol);
-    setShowDrawer(true); 
+    setShowDrawer(true);
   };
 
   return (
@@ -79,75 +72,61 @@ export default function StocklistDrawer() {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Stock List</h2>
       </div>
-
-      {error && <div className="text-red-600 mb-4">{error}</div>}
+  
+      {error && <div className="text-[rgb(214,77,77)] mb-4">{error}</div>}
       <StockSearchBox />
-
-      {stocks && stocks.length > 0 ? (
-        stocks.map(({ symbol, instrumentKey, exchange }: any) => {
-          const stockInfo = stockData?.[instrumentKey] || {};
-          const price = stockInfo.last_price || "0.0";
-          const openPrice = stockInfo.ohlc?.close || 0;
-          const change =
-            price !== "0.0" ? (parseFloat(price) - openPrice).toFixed(2) : "0";
-          const percentage =
-            openPrice !== 0
-              ? ((Number(change) / openPrice) * 100).toFixed(2)
-              : "0";
-
-          const isStockSelected = symbol === selectedStock;
-          const isPricePositive = Number(change) >= 0;
-
-          return (
-            <div
-              key={instrumentKey}
-              className={`stockcard p-2 py-2 flex justify-between items-center border-b hover:bg-gray-100 cursor-pointer ${
-                isStockSelected ? "bg-gray-200" : ""
-              }`}
-              onMouseEnter={() => setHoveredStock(symbol)}
-              onMouseLeave={() => setHoveredStock(null)}
-              onClick={() => handleStockClick(instrumentKey, symbol)}
-            >
-              <div>
-                <div className="font-normal text-xs">{symbol}</div>
-                <div className="text-xs text-gray-500">{exchange} EQ</div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm">{price}</div>
-                <div
-                  className={`text-sm ml-2 ${
-                    isPricePositive ? "text-green-500" : "text-red-600"
-                  }`}
-                >
-                  {change} ({percentage}%)
+  
+      <div style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
+        {stocks && stocks.length > 0 ? (
+          stocks.map(({ symbol, instrumentKey, exchange }: any) => {
+            const stockInfo = stockData?.[instrumentKey] || {};
+            const price = stockInfo.last_price || "0.0";
+            const openPrice = stockInfo.ohlc?.close || 0;
+            const change = price !== "0.0" ? (parseFloat(price) - openPrice).toFixed(2) : "0";
+            const percentage = openPrice !== 0 ? ((Number(change) / openPrice) * 100).toFixed(2) : "0";
+  
+            const isStockSelected = symbol === selectedStock;
+            const isPricePositive = Number(change) >= 0;
+  
+            return (
+              <div
+                key={instrumentKey}
+                className={`stockcard p-2 py-2 flex justify-between items-center border-b text-xm hover:bg-white cursor-pointer ${isStockSelected ? "bg-gray-200 shine-text" : ""}`}
+                onMouseEnter={() => setHoveredStock(symbol)}
+                onMouseLeave={() => setHoveredStock(null)}
+                onClick={() => handleStockClick(instrumentKey, symbol)}
+              >
+                <div>
+                  <div className="text-sm font-[600] font-barlow">{symbol}</div>
+                  <div className="text-xs text-[#425061] font-[300]">{exchange} EQ</div>
                 </div>
-              </div>
-              {hoveredStock === symbol && (
-                <div className="mt-2 flex gap-2">
-                  <button
-                    className="bg-green-500 text-white px-2 py-1 rounded-full text-xs"
-                    onClick={(e) => handleBuyStock(e, instrumentKey, symbol)}
-                  >
-                    Buy
-                  </button>
-                  <button
-                    className="bg-red-500 text-white px-2 py-1 rounded-full text-xs"
-                    onClick={(e) => handleSellStock(e, instrumentKey, symbol)}
-                  >
-                    Sell
-                  </button>
+                <div className="text-right">
+                  <div className="text-sm">{price}</div>
+                  <div className={`text-sm ml-2 ${isPricePositive ? "text-[rgb(0,143,117)]" : "text-[rgb(214,77,77)]"}`}>
+                    {change} ({percentage}%)
+                  </div>
                 </div>
-              )}
-            </div>
-          );
-        })
-      ) : (
-        <div className="text-center py-4">
-          <StockSkeleton />
-          <StockSkeleton />
-        </div>
-      )}
-
+                {hoveredStock === symbol && (
+                  <div className="mt-2 flex gap-2">
+                    <button className="bg-green-500 text-white px-2 py-1 rounded-full text-xs" onClick={(e) => handleBuyStock(e, instrumentKey, symbol)}>
+                      Buy
+                    </button>
+                    <button className="bg-red-500 text-white px-2 py-1 rounded-full text-xs" onClick={(e) => handleSellStock(e, instrumentKey, symbol)}>
+                      Sell
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        ) : (
+          <div className="text-center py-4">
+            <StockSkeleton />
+            <StockSkeleton />
+          </div>
+        )}
+      </div>
+  
       {showDrawer && (
         <StockDrawer
           closeDrawer={closeDrawer}
@@ -157,4 +136,5 @@ export default function StocklistDrawer() {
       )}
     </div>
   );
+  ;
 }

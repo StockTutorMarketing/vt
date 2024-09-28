@@ -14,7 +14,7 @@ const StockDrawer: React.FC<StockDrawerProps> = ({
   stock,
   closeDrawer,
 }) => {
-  const { value,sendBuyOrder, setValue, stockData, socket } = useContext<any>(MyContext);
+  const { value, sendBuyOrder, setValue, stockData, socket ,sendSellOrder } = useContext<any>(MyContext);
   const [isVisible, setIsVisible] = useState(false);
   const [isIntraday, setIsIntraday] = useState(true);
   const [quantity, setQuantity] = useState<number | any>(0);
@@ -60,17 +60,39 @@ const StockDrawer: React.FC<StockDrawerProps> = ({
   const toggleAction = () => {
     setAction((prevAction: any) => (prevAction === "buy" ? "sell" : "buy"));
   };
+
+
+  function checkMarketHours() {
+    const now = new Date();
+    const day = now.getDay();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+
+    const isWeekday = day >= 1 && day <= 5;
+
+    const isMarketOpen = (hours === 9 && minutes >= 0) ||
+      (hours > 9 && hours < 15) ||
+      (hours === 15 && minutes <= 30);
+    return isWeekday && isMarketOpen;
+  }
+
+
+
   const handleTransaction = async () => {
     if (!quantity || (!isMarketOrder && !price)) {
       setError("Please fill in all required fields.");
       toast.error("Please provide valid quantity and price!");
       return;
     }
-      if (!stock?.tradable) {
+    if (!stock?.tradable) {
       toast.error("This stock is not tradable at the moment.");
       return;
     }
-  
+    let isMarketOpen = checkMarketHours()
+    if (!isMarketOpen) {
+      toast.error("Market is closed.")
+      return
+    }
     const orderData = {
       userId: '66d7f6e3976bae8f8a3f6616',
       instrument_token: stock?.instrument_token,
@@ -78,23 +100,35 @@ const StockDrawer: React.FC<StockDrawerProps> = ({
       bought_qty: parseInt(quantity),
       symbol: value,
     };
-  
-    let result=sendBuyOrder(orderData)
-      .then((response:any) => {
+    if(action==='buy'){
+      await sendBuyOrder(orderData)
+      .then((response: any) => {
         if (response.status === "success") {
           toast.success(response.message);
         } else {
           toast.error(`Order Error: ${response.message}`);
         }
-        console.log(result ,"this is my response")
         closeDrawer();
       })
-      .catch((error:any) => {
+      .catch((error: any) => {
         toast.error(error);
       });
+    }else{
+      await sendSellOrder(orderData)
+      .then((response: any) => {
+        if (response.status === "success") {
+          toast.success(response.message);
+        } else {
+          toast.error(`Order Error: ${response.message}`);
+        }
+        closeDrawer();
+      })
+      .catch((error: any) => {
+        toast.error(error);
+      });
+    }
+    
   };
-  
-
   const isButtonDisabled = quantity <= 0 || (!isMarketOrder && !price);
 
   return (
@@ -135,7 +169,6 @@ const StockDrawer: React.FC<StockDrawerProps> = ({
         </div>
 
         <div className="p-4">
-          {/* Order Type (Intraday/Longterm) */}
           <div className="flex justify-between gap-4 pt-4">
             <label className="text-gray-600">
               <input

@@ -109,5 +109,21 @@ export const GetSymbolForDrawer = async () => {
       "type": "stock",
       "instrumentKey": "5215745"
     },
+    {
+      "symbol": "BAJAJFINSV",
+      "ticker": "BAJAJFINSV",
+      "description": "BAJAJ FINSERV",
+      "exchange": "NSE",
+      "type": "stock",
+      "instrumentKey": "4268801"
+    },
+    {
+      "symbol": "RENUKA",
+      "ticker": "RENUKA",
+      "description": "SHREE RENUKA SUGARS",
+      "exchange": "BSE",
+      "type": "stock",
+      "instrumentKey": "136363524"
+    },
   ]
 }

@@ -3,6 +3,8 @@ import React, { useContext } from 'react';
 import Image from 'next/image';
 import { BiUpArrow, BiDownArrow } from 'react-icons/bi';
 import { MyContext } from '@/context/symbolecontext';
+import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
+
 
 export default function Header() {
     const { selectedTab, setSelectedTab, stockData } = useContext<any>(MyContext);
@@ -12,14 +14,14 @@ export default function Header() {
     };
 
     return (
-        <div className="h-full flex flex-col">
-            <div className="bg-white border-2 border-gray-200 h-fit shadow-lg p-2 flex items-center justify-between">
-                <div className='w-fit gap-8 flex '>
+        <div className="h-full flex flex-col bg-[#f1f4fd] ">
+            <div className="bg-white border-2 border-gray-200 h-fit shadow-lg p-2 flex items-center justify-evenly gap-[40rem]  ">
+                <div className='w-fit gap-8 flex max-w-7xl px-auto'>
                     <div className='flex items-center gap-4'>
                         <Image alt='logo' src="/logo.png" height={20} width={30} />
-                        <span className='font-bold font-serif'>Stock Tutor</span>
+                        <span className='font-bold  '>StockTutor</span>
                     </div>
-                    <ul className="flex gap-10 text-xs flex-grow justify-center">
+                    <ul className="flex gap-10 text-xs flex-grow justify-start ">
                         {[
                             { label: 'Nifty50', key: '256265' },
                             { label: 'NIFTY PHARMA', key: '262409' },
@@ -32,14 +34,14 @@ export default function Header() {
                             const percentage = openPrice !== 0 ? ((Number(change) / openPrice) * 100).toFixed(2) : "0.00";
                             const isPositive = Number(change) >= 0;
                             return (
-                                <li key={key} className="flex flex-col items-center">
-                                    <p className="text-xm">{label}</p>
-                                    <div className={`flex items-center ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                                <li key={key} className="flex flex-col font-barlow items-left border-r-[1px] pr-4  border-[#e8ebf1]">
+                                    <p className="text-xm">{label.toUpperCase()}</p>
+                                    <div className={`flex items-center ${isPositive ? 'text-green-600 ' : 'text-red-600'}`}>
                                         <span className="text-xm font">{price}</span>
                                         {isPositive ? (
-                                            <BiUpArrow className="ml-1 text-sm" />
+                                            < IoMdArrowDropup size={28} className="ml-1 " />
                                         ) : (
-                                            <BiDownArrow className="ml-1 text-lg" />
+                                            <IoMdArrowDropdown size={28} className="ml-1 text-lg" />
                                         )}
                                         <span className="ml-1 text-sm">
                                             {isPositive ? `(+${percentage}%)` : `(${percentage}%)`}

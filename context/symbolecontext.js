@@ -67,7 +67,7 @@ export const MyProvider = ({ children }) => {
   const subscribeToTokens = (socket) => {
     const tokensToSubscribe = [
       128083204, 128108804, 256265, 260105, 139321604, 82945, 1756929, 4343041,
-      128211204, 139109380, 1304833, 5215745, 128046084,262409, ...newTokens,
+      128211204, 139109380, 1304833, 5215745, 128046084, 262409, ...newTokens,
     ];
     socket.send(JSON.stringify({ type: "subscribe", tokens: tokensToSubscribe }));
   };
@@ -85,26 +85,25 @@ export const MyProvider = ({ children }) => {
           type: "buyorder",
           data: orderData,
         };
-  
+
 
         socket.send(JSON.stringify(message));
-  
+
         const responseHandler = (event) => {
           let response;
-          
           try {
             response = JSON.parse(event.data);
           } catch (error) {
             console.warn("Received non-JSON response:", event.data);
-            return; 
+            return;
           }
-  
+
           if (response.type === 'order') {
             socket.removeEventListener('message', responseHandler);
             resolve(response);
           }
         };
-  
+
         socket.addEventListener('message', responseHandler);
       } else {
         reject("WebSocket not connected. Cannot send buy order.");
@@ -113,17 +112,41 @@ export const MyProvider = ({ children }) => {
   };
 
   const sendSellOrder = (orderData) => {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      socket.send(JSON.stringify({ type: "sellorder", data: orderData }));
-      toast.success("Sell order sent!");
-    } else {
-      toast.error("WebSocket not connected. Cannot send sell order.");
-    }
+    return new Promise((resolve, reject) => {
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        const message = {
+          type: "sellorder",
+          data: orderData,
+        };
+
+
+        socket.send(JSON.stringify(message));
+
+        const responseHandler = (event) => {
+          let response;
+          try {
+            response = JSON.parse(event.data);
+          } catch (error) {
+            console.warn("Received non-JSON response:", event.data);
+            return;
+          }
+
+          if (response.type === 'order') {
+            socket.removeEventListener('message', responseHandler);
+            resolve(response);
+          }
+        };
+
+        socket.addEventListener('message', responseHandler);
+      } else {
+        reject("WebSocket not connected. Cannot send buy order.");
+      }
+    });
   };
 
   return (
     <MyContext.Provider
-      value={{ value, setValue, socket, stockData, error, setNewTokens, sendBuyOrder, sendSellOrder,selectedTab,setSelectedTab }}
+      value={{ value, setValue, socket, stockData, error, setNewTokens, sendBuyOrder, sendSellOrder, selectedTab, setSelectedTab }}
     >
       {children}
     </MyContext.Provider>
