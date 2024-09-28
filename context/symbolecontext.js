@@ -67,7 +67,7 @@ export const MyProvider = ({ children }) => {
   const subscribeToTokens = (socket) => {
     const tokensToSubscribe = [
       128083204, 128108804, 256265, 260105, 139321604, 82945, 1756929, 4343041,
-      128211204, 139109380, 1304833, 5215745, 128046084, 262409, ...newTokens,
+      128211204, 139109380, 1304833, 5215745, 128046084, 262409, 136363524,4268801, ...newTokens,
     ];
     socket.send(JSON.stringify({ type: "subscribe", tokens: tokensToSubscribe }));
   };
